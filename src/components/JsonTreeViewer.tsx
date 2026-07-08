@@ -6,9 +6,15 @@ import type { JsonParseResult } from '../types/json'
 
 type JsonTreeViewerProps = {
   parseResult: JsonParseResult
+  expandedPaths: Set<string>
+  onTogglePath: (path: string) => void
 }
 
-function JsonTreeViewer({ parseResult }: JsonTreeViewerProps) {
+function JsonTreeViewer({
+  parseResult,
+  expandedPaths,
+  onTogglePath,
+}: JsonTreeViewerProps) {
   const renderCount = useRenderCount()
 
   const badge = <RenderBadge count={renderCount} label="JsonTreeViewer" />
@@ -32,7 +38,12 @@ function JsonTreeViewer({ parseResult }: JsonTreeViewerProps) {
   return (
     <div className="treeViewer">
       {badge}
-      <JsonNode value={parseResult.value} />
+      <JsonNode
+        path="/"
+        expandedPaths={expandedPaths}
+        onTogglePath={onTogglePath}
+        value={parseResult.value}
+      />
     </div>
   )
 }

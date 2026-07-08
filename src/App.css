@@ -242,6 +242,38 @@
   margin: 0;
 }
 
+.jsonNodeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.jsonNodeToggle {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-h);
+  border-radius: 4px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.jsonNodeToggle:hover {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+}
+
+.jsonNodeToggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
 .jsonNode + .jsonNode {
   margin-top: 4px;
 }

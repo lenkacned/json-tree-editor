@@ -5,8 +5,12 @@ JsonNode dobije jednu JSON vrednost
 → ako ima decu, pozove opet JsonNode za svako dete
 */
 import type { JsonPrimitive, JsonValue } from '../types/json'
+import { joinJsonPath } from '../utils/jsonPath'
 
 type JsonNodeProps = {
+  path: string
+  expandedPaths: Set<string>
+  onTogglePath: (path: string) => void
   // label je optional jer root JSON nema ime,
   // dok object key i array index imaju label
   label?: string
@@ -28,9 +32,16 @@ function formatPrimitive(value: JsonPrimitive): string {
 }
 
 // Komponenta koja prikazuje jedan čvor u JSON stablu (primitive, array, object)
-export default function JsonNode({ label, value }: JsonNodeProps) {
+export default function JsonNode({
+  path,
+  expandedPaths,
+  onTogglePath,
+  label,
+  value,
+}: JsonNodeProps) {
   // Primitive prikazujemo direktno.
   // Primitive nema decu, zato se samo renderuje vrednost.
+  // Primitive nema decu, pa nema expand/collapse toggle.
   if (isJsonPrimitive(value)) {
     return (
       <div className="jsonNode jsonNodePrimitive">
@@ -42,20 +53,42 @@ export default function JsonNode({ label, value }: JsonNodeProps) {
     )
   }
 
+  const isExpanded = expandedPaths.has(path)
   // Rekurzija: svaki item u array-u je opet JsonValue,
   // pa ga prikazuje ista JsonNode komponenta.
   if (Array.isArray(value)) {
     return (
       <div className="jsonNode">
-        {label !== undefined ? (
-          <span className="jsonKey">{label}: </span>
-        ) : null}
-        <span className="jsonType">Array [{value.length}]</span>
-        <div className="jsonChildren">
-          {value.map((item, index) => (
-            <JsonNode key={index} label={`[${index}]`} value={item} />
-          ))}
+        <div className="jsonNodeRow">
+          <button
+            type="button"
+            className="jsonNodeToggle"
+            onClick={() => onTogglePath(path)}
+            aria-expanded={isExpanded}
+            aria-label={isExpanded ? 'Collapse array' : 'Expand array'}
+          >
+            {isExpanded ? '▼' : '▶'}
+          </button>
+          {label !== undefined ? (
+            <span className="jsonKey">{label}: </span>
+          ) : null}
+          <span className="jsonType">Array [{value.length}]</span>
         </div>
+        {/* Object/array renderuju children samo kada je path expanded. */}
+        {isExpanded ? (
+          <div className="jsonChildren">
+            {value.map((item, index) => (
+              <JsonNode
+                key={index}
+                path={joinJsonPath(path, String(index))}
+                expandedPaths={expandedPaths}
+                onTogglePath={onTogglePath}
+                label={`[${index}]`}
+                value={item}
+              />
+            ))}
+          </div>
+        ) : null}
       </div>
     )
   }
@@ -66,17 +99,37 @@ export default function JsonNode({ label, value }: JsonNodeProps) {
   // Svaka value grana opet ide kroz JsonNode.
   return (
     <div className="jsonNode">
-      {label !== undefined ? <span className="jsonKey">{label}: </span> : null}
-      <span className="jsonType">
-        Object {'{'}
-        {keys.length} {keys.length === 1 ? 'key' : 'keys'}
-        {'}'}
-      </span>
-      <div className="jsonChildren">
-        {keys.map((key) => (
-          <JsonNode key={key} label={key} value={value[key]} />
-        ))}
+      <div className="jsonNodeRow">
+        <button
+          type="button"
+          className="jsonNodeToggle"
+          onClick={() => onTogglePath(path)}
+          aria-expanded={isExpanded}
+          aria-label={isExpanded ? 'Collapse object' : 'Expand object'}
+        >
+          {isExpanded ? '▼' : '▶'}
+        </button>
+        {label !== undefined ? <span className="jsonKey">{label}: </span> : null}
+        <span className="jsonType">
+          Object {'{'}
+          {keys.length} {keys.length === 1 ? 'key' : 'keys'}
+          {'}'}
+        </span>
       </div>
+      {isExpanded ? (
+        <div className="jsonChildren">
+          {keys.map((key) => (
+            <JsonNode
+              key={key}
+              path={joinJsonPath(path, key)}
+              expandedPaths={expandedPaths}
+              onTogglePath={onTogglePath}
+              label={key}
+              value={value[key]}
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }

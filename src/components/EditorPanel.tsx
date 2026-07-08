@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react'
 import JsonTextEditor from './JsonTextEditor.tsx'
 import JsonTreeViewer from './JsonTreeViewer.tsx'
 import Tabs from './Tabs.tsx'
@@ -25,6 +26,25 @@ export default function EditorPanel({
   parseResult,
   parseError,
 }: EditorPanelProps) {
+  // expandedPaths je UI state panela (koji čvorovi su otvoreni), ne JSON data state.
+  // State živi ovde, a ne u JsonTreeViewer, jer se viewer unmountuje na Text tabu.
+  const [expandedPaths, setExpandedPaths] = useState<Set<string>>(
+    () => new Set(['/']), // na pocetku root otvoren, sva deca zatvorena
+  )
+
+  const handleTogglePath = useCallback((path: string) => {
+    setExpandedPaths((prev) => {
+      // React zahteva novi Set — ne mutiramo postojeći objekat u state-u.
+      const next = new Set(prev)
+      if (next.has(path)) {
+        next.delete(path)
+      } else {
+        next.add(path)
+      }
+      return next
+    })
+  }, [])
+
   return (
     <section className="editorPanel" aria-label={panelLabel}>
       <div className="editorPanelHeader">
@@ -58,10 +78,13 @@ export default function EditorPanel({
         ) : (
           // Tree prikaz je readonly derived UI iz parseResult-a; editovanje dolazi kasnije.
           // Tree ne menja state. Samo prikazuje parseResult koji je App već izračunao.
-          <JsonTreeViewer parseResult={parseResult} />
+          <JsonTreeViewer
+            parseResult={parseResult}
+            expandedPaths={expandedPaths}
+            onTogglePath={handleTogglePath}
+          />
         )}
       </div>
     </section>
   )
 }
-
