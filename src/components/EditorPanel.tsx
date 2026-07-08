@@ -9,8 +9,11 @@ type EditorPanelProps = {
   onTextChange?: (next: string) => void
   panelLabel: string
   treePlaceholder: string
+  // // Optional: samo panel koji prikazuje parsed preview mora da zna za parse error.
+  parseError?: string | null // panel može, ali ne mora, da dobije parse error
 }
 
+// genericka komponenta
 export default function EditorPanel({
   tab,
   onTabChange,
@@ -18,21 +21,32 @@ export default function EditorPanel({
   onTextChange,
   panelLabel,
   treePlaceholder,
+  parseError,
 }: EditorPanelProps) {
   return (
     <section className="editorPanel" aria-label={panelLabel}>
       <div className="editorPanelHeader">
         <div className="editorPanelTitle">{panelLabel}</div>
+        {/* 
+        Conditional render: 
+        Renderujemo error samo kada error postoji i parser vrati grešku.
+        → ako je parseError null/undefined → ne prikaži ništa
+        role="alert" pomaže da poruka bude jasna i accessibility alatima. */}
+        {parseError ? (
+          <div className="parseError" role="alert">
+            {parseError}
+          </div>
+        ) : null}
       </div>
 
       {/* Panel ne čuva svoj tab state.
       Aktivni tab dolazi iz parenta, a klik šalje promenu nazad kroz callback. */}
       <Tabs value={tab} onChange={onTabChange} />
       
-      {/* Conditional render: tab određuje koji prikaz (Text ili Tree) se renderuje. */}
+      {/* 
+      Conditional render: 
+      tab određuje koji prikaz (Text ili Tree) se renderuje. */}
       <div className="editorPanelBody">
-        {/* Conditional render: tab određuje koji prikaz (Text ili Tree) se renderuje. */}
-        {/* Faza 1: Tree prikaz je još placeholder; pravi recursive tree viewer dolazi u Fazi 3. */}  
         {tab === 'text' ? (
           <JsonTextEditor
             value={textValue}
@@ -40,8 +54,6 @@ export default function EditorPanel({
             ariaLabel={`${panelLabel} JSON text`}
           />
         ) : (
-          
-          // Faza 1 samo prikazuje skeleton: pravi tree viewer dolazi u Fazi 3.
           <div className="treePlaceholder">{treePlaceholder}</div>
         )}
       </div>
