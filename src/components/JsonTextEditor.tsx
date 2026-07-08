@@ -52,5 +52,5 @@ export default function JsonTextEditor({
 /*
  JsonTextEditor nije memoizovan jer mu se value realno menja dok korisnik kuca.
  Očekujemo da njegov render badge raste.
- Memo demonstracija je EditorHeader, jer on ima statične props.
+ Memo demonstracija je EditorHeader, jer on ima statične props, a JsonTextEditor ima dynamic props.
 */

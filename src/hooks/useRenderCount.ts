@@ -6,7 +6,7 @@ import { useRef } from 'react'
 
 // ref se namerno čita/menja tokom rendera.
 // ESLint neće prijavljivati greške za refs u ovom delu koda.
-
+// 
 /* eslint-disable react-hooks/refs */
 export function useRenderCount(): number {
   // ref pamti vrednost između rendera, 
@@ -25,4 +25,7 @@ Ne koristimo ga da menjamo UI, nego samo da izmerimo
  Ovaj hook namerno čita i menja ref tokom rendera da bi izmerio render prolaze.
  To je prihvatljivo samo za debug/learning alat, ne za običnu app logiku, jer
  tokom rendera menjaš vrednost -> Render ne bi trebalo da pravi skrivene promene sa strane.
+ 
+ useRenderCount koristi useRef, a taj ref živi samo dok ta instanca komponente postoji.
+ tako da kada se komponenta unmountuje badge se resetuje
  */
