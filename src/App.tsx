@@ -26,6 +26,8 @@ function App() {
   // useJsonParser se na svaki re-render poziva, ali 
   // safeParseJson se ponovo izvrsava samo kada se text promeni
   // dakle, re-parse samo kada se text zaista promeni.
+  // I Text preview i Tree preview koriste isti parseResult.
+  // Desni panel je readonly preview: dobija izvedeni tekst i isti parseResult.
   const { parseResult, prettyText } = useJsonParser(leftText) 
 
   // Ovo je callback koji ide dole do textarea editora.
@@ -49,7 +51,8 @@ function App() {
           textValue: leftText,
           onTextChange: handleLeftTextChange, // levi panel može da menja tekst.
           panelLabel: 'Left',
-          treePlaceholder: 'Left Tree: Tree editor/viewer dolazi u Fazi 3.',
+          // Levi Tree čita isti parseResult iz leftText-a — bez posebnog JSON state-a.
+          parseResult,
         }}
         right={{
           // Desni panel je izveden iz leftText-a, zato ne držimo poseban rightText state.
@@ -62,8 +65,9 @@ function App() {
           textValue: rightTextPreview, // dobija izvedeni tekst
           onTextChange: undefined, // nema callback za promenu
           panelLabel: 'Right',
-          treePlaceholder: 'Right Tree: Tree preview dolazi u Fazi 3.',
-          parseError: parseResult.ok ? null : parseResult.error, // dobija error ako JSON nije validan
+          // Desni Tree je readonly preview istog parseResult-a.
+          parseResult,
+          parseError: parseResult.ok ? null : parseResult.error,
         }}
       />
     </div>

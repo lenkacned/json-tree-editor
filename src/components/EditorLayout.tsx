@@ -1,5 +1,6 @@
 import EditorPanel from './EditorPanel.tsx'
 import type { TabKey } from '../types/editor'
+import type { JsonParseResult } from '../types/json'
 
 // generic type za sve panele, 
 // tako da može da se koristi za levi i desni panel
@@ -9,7 +10,8 @@ type PanelConfig = {
   textValue: string
   onTextChange?: (next: string) => void
   panelLabel: string
-  treePlaceholder: string
+  // Tree tab koristi parseResult da prikaže readonly strukturu JSON-a.
+  parseResult: JsonParseResult // svaki panel sada mora da dobije parseResult
   parseError?: string | null // "optional" zbog levog panela koji nema parse error
 }
 
@@ -18,6 +20,8 @@ type EditorLayoutProps = {
   right: PanelConfig
 }
 
+// EditorLayout ne odlučuje kako se JSON prikazuje.
+// Samo prosleđuje isti shape podataka svakom panelu.
 export default function EditorLayout({ left, right }: EditorLayoutProps) {
   return (
     <div className="editorLayout">
@@ -27,7 +31,7 @@ export default function EditorLayout({ left, right }: EditorLayoutProps) {
         textValue={left.textValue}
         onTextChange={left.onTextChange}
         panelLabel={left.panelLabel}
-        treePlaceholder={left.treePlaceholder}
+        parseResult={left.parseResult}
         parseError={left.parseError}
       />
       <EditorPanel
@@ -36,7 +40,7 @@ export default function EditorLayout({ left, right }: EditorLayoutProps) {
         textValue={right.textValue}
         onTextChange={right.onTextChange}
         panelLabel={right.panelLabel}
-        treePlaceholder={right.treePlaceholder}
+        parseResult={right.parseResult}
         parseError={right.parseError}
       />
     </div>

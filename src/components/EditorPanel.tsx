@@ -1,6 +1,8 @@
 import JsonTextEditor from './JsonTextEditor.tsx'
+import JsonTreeViewer from './JsonTreeViewer.tsx'
 import Tabs from './Tabs.tsx'
 import type { TabKey } from '../types/editor'
+import type { JsonParseResult } from '../types/json'
 
 type EditorPanelProps = {
   tab: TabKey
@@ -8,8 +10,8 @@ type EditorPanelProps = {
   textValue: string
   onTextChange?: (next: string) => void
   panelLabel: string
-  treePlaceholder: string
-  // // Optional: samo panel koji prikazuje parsed preview mora da zna za parse error.
+  parseResult: JsonParseResult
+  // Optional: samo panel koji prikazuje parsed preview mora da zna za parse error.
   parseError?: string | null // panel može, ali ne mora, da dobije parse error
 }
 
@@ -20,7 +22,7 @@ export default function EditorPanel({
   textValue,
   onTextChange,
   panelLabel,
-  treePlaceholder,
+  parseResult,
   parseError,
 }: EditorPanelProps) {
   return (
@@ -43,9 +45,9 @@ export default function EditorPanel({
       Aktivni tab dolazi iz parenta, a klik šalje promenu nazad kroz callback. */}
       <Tabs value={tab} onChange={onTabChange} />
       
-      {/* 
-      Conditional render: 
-      tab određuje koji prikaz (Text ili Tree) se renderuje. */}
+      {/* Conditional render: tab bira Text editor ili readonly Tree prikaz. 
+      ako je tab Text → renderuje textarea
+      ako je tab Tree → renderuje JsonTreeViewer s parseResult-om*/}
       <div className="editorPanelBody">
         {tab === 'text' ? (
           <JsonTextEditor
@@ -54,7 +56,9 @@ export default function EditorPanel({
             ariaLabel={`${panelLabel} JSON text`}
           />
         ) : (
-          <div className="treePlaceholder">{treePlaceholder}</div>
+          // Tree prikaz je readonly derived UI iz parseResult-a; editovanje dolazi kasnije.
+          // Tree ne menja state. Samo prikazuje parseResult koji je App već izračunao.
+          <JsonTreeViewer parseResult={parseResult} />
         )}
       </div>
     </section>

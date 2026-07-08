@@ -305,6 +305,63 @@
   white-space: pre-wrap;
 }
 
+.treeViewer {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--code-bg);
+  color: var(--text-h);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.45;
+  overflow: auto;
+}
+
+.treeViewerError {
+  color: var(--text);
+}
+
+.treeViewerErrorDetail {
+  margin-top: 8px;
+  color: #b42318;
+  font-size: 13px;
+}
+
+.jsonNode {
+  margin: 0;
+}
+
+.jsonNode + .jsonNode {
+  margin-top: 4px;
+}
+
+.jsonKey {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.jsonType {
+  color: var(--text);
+  font-style: italic;
+}
+
+.jsonPrimitive {
+  color: var(--text-h);
+}
+
+.jsonChildren {
+  margin-left: 16px;
+  padding-left: 8px;
+  border-left: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+.jsonNodePrimitive .jsonPrimitive {
+  word-break: break-word;
+}
+
 @media (max-width: 1024px) {
   .editorLayout {
     flex-direction: column;
