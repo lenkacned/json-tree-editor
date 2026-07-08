@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import JsonNode from './JsonNode'
 import RenderBadge from './RenderBadge'
 import { useRenderCount } from '../hooks/useRenderCount'
@@ -7,7 +8,7 @@ type JsonTreeViewerProps = {
   parseResult: JsonParseResult
 }
 
-export default function JsonTreeViewer({ parseResult }: JsonTreeViewerProps) {
+function JsonTreeViewer({ parseResult }: JsonTreeViewerProps) {
   const renderCount = useRenderCount()
 
   const badge = <RenderBadge count={renderCount} label="JsonTreeViewer" />
@@ -35,3 +36,8 @@ export default function JsonTreeViewer({ parseResult }: JsonTreeViewerProps) {
     </div>
   )
 }
+
+// React.memo preskače re-render kada je parseResult isti.
+// parseResult ostaje isti dok se leftText ne promeni, jer useJsonParser koristi useMemo.
+// Kada korisnik kuca i leftText se promeni, parseResult dobija novu vrednost i Tree se normalno ažurira.
+export default memo(JsonTreeViewer)

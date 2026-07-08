@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react'
+import { memo, type ChangeEvent } from 'react'
 import RenderBadge from './RenderBadge'
 import { useRenderCount } from '../hooks/useRenderCount'
 
@@ -8,7 +8,7 @@ type JsonTextEditorProps = {
   ariaLabel: string
 }
 
-export default function JsonTextEditor({
+function JsonTextEditor({
   value,
   onChange,
   ariaLabel,
@@ -49,8 +49,6 @@ export default function JsonTextEditor({
   )
 }
 
-/*
- JsonTextEditor nije memoizovan jer mu se value realno menja dok korisnik kuca.
- Očekujemo da njegov render badge raste.
- Memo demonstracija je EditorHeader, jer on ima statične props, a JsonTextEditor ima dynamic props.
-*/
+// React.memo preskače re-render kada su value, onChange i ariaLabel isti.
+// Memo ne blokira pravi update: kada se value promeni dok korisnik kuca, JsonTextEditor se normalno re-renderuje.
+export default memo(JsonTextEditor)
