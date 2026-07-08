@@ -185,7 +185,6 @@
 
 /* ------------------------------
    Minimalni JSON editor layout
-   (Faza 1: samo Text/Tree skeleton)
 -------------------------------- */
 
 .jsonEditorApp {
@@ -271,11 +270,15 @@
   min-height: 360px;
   padding: 12px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .jsonTextarea {
   width: 100%;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
+  height: auto;
   resize: none;
   border: none;
   outline: none;
@@ -292,7 +295,9 @@
 
 .treePlaceholder {
   width: 100%;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
+  height: auto;
   box-sizing: border-box;
   border-radius: 10px;
   padding: 12px;
@@ -307,7 +312,9 @@
 
 .treeViewer {
   width: 100%;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
+  height: auto;
   box-sizing: border-box;
   border-radius: 10px;
   padding: 12px;
@@ -365,9 +372,15 @@
 @media (max-width: 1024px) {
   .editorLayout {
     flex-direction: column;
+    min-height: 0;
+  }
+
+  .editorPanel {
+    flex: 1 1 0;
+    min-height: 0;
   }
 
   .editorPanelBody {
-    min-height: 280px;
+    min-height: clamp(160px, 32vh, 240px);
   }
 }
