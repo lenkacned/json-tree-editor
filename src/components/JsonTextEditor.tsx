@@ -1,4 +1,6 @@
 import type { ChangeEvent } from 'react'
+import RenderBadge from './RenderBadge'
+import { useRenderCount } from '../hooks/useRenderCount'
 
 type JsonTextEditorProps = {
   value: string
@@ -11,14 +13,14 @@ export default function JsonTextEditor({
   onChange,
   ariaLabel,
 }: JsonTextEditorProps) {
-  /*
-  Ako nema onChange callback-a, komponenta je samo preview.
-  To koristimo za desni panel: prikazuje value, ali ne može da menja state.
-  */
+  const renderCount = useRenderCount()
+
+  // Ako nema onChange callback-a, editor je readonly preview.
+  // To koristimo za desni panel: prikazuje derived text, ali ne može da menja state.
   const readOnly = onChange === undefined // true / false
 
-  // Controlled textarea: `value` dolazi iz React state-a u parentu,
-  // a `onChange` samo "vrati" novu vrednost nazad parentu.
+  // Controlled textarea: `value` dolazi iz parent state-a,
+  // a onChange samo šalje novu vrednost nazad parentu.
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     // Guard za readonly/desni panel: ako nema callback-a, nema propagacije promene.
     if (!onChange) return  // desni panel samo prikazuje vrednost, ali ne može da je menja
@@ -33,7 +35,9 @@ export default function JsonTextEditor({
   }
 
   return (
-    <textarea
+    <div className="jsonTextEditorShell">
+      <RenderBadge count={renderCount} label="JsonTextEditor" />
+      <textarea
       className="jsonTextarea"
       value={value} // Controlled input: Prikaži u textarea ono što React state/props kaže. React kontroliše šta textarea prikazuje.
       onChange={handleChange} // Kada korisnik kuca, uhvati React event i pošalji novu vrednost parentu; promena ide nazad u React kroz callback.
@@ -41,6 +45,12 @@ export default function JsonTextEditor({
       aria-label={ariaLabel}
       spellCheck={false}
     />
+    </div>
   )
 }
 
+/*
+ JsonTextEditor nije memoizovan jer mu se value realno menja dok korisnik kuca.
+ Očekujemo da njegov render badge raste.
+ Memo demonstracija je EditorHeader, jer on ima statične props.
+*/
